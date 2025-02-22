@@ -18,12 +18,12 @@ class TokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
 
-    password = serializers.CharField(writeonly=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(writeonly=True, required=True)
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = api_models.User
-        fileds = ['full_name', 'email', 'password', 'password2']
+        fields = ['full_name', 'email', 'password', 'password2']
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -40,7 +40,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         email_username, mobile = user.email.split('@')
         user.username = email_username
 
-        user.set_password(validate_password['password'])
+        user.set_password(validated_data['password'])
         user.save()
 
         return user
