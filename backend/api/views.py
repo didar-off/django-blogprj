@@ -34,10 +34,12 @@ from api import models as api_models
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = api_serializer.TokenObtainPairSerializer
 
+
 class RegisterView(generics.CreateAPIView):
     queryset = api_models.User.objects.all()
     permission_classes = [AllowAny]
     serializer_class = api_serializer.RegisterSerializer
+
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = [AllowAny]
@@ -48,3 +50,22 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         user = api_models.User.objects.get(id=user_id)
         profile = api_models.Profile.objects.get(user=user)
         return profile
+    
+
+class CategoryListAPIView(generics.ListAPIView):
+    serializer_class = api_serializer.CategorySerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return api_models.Category.objects.all()
+    
+
+class PostCategoryListAPIView(generics.ListAPIView):
+    serializer_class = api_serializer.PostSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        category_slug = self.kwargs['category_slug']
+        category = api_models.Category.objects.get(slug=category_slug)
+
+        return api_models.Post.objects.filter(category=category, status='Published')

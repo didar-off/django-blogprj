@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from api import models as api_models
 
+
 class TokenObtainPairSerializer(TokenObtainPairSerializer):
 
     @classmethod
@@ -66,7 +67,7 @@ class CategorySerializer(serializers.ModelSerializer):
         return category.posts.count()
     
     class Meta:
-        moel = api_models.Category
+        model = api_models.Category
         fields = ['id', 'title', 'image', 'slug', 'post_count']
 
 

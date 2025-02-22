@@ -92,7 +92,7 @@ class Post(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_posts')
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='profile_posts')
-    category = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length=100)
     description = models.TextField()
     image = models.ImageField(upload_to='image/posts', default='default/post.jpg')
