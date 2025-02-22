@@ -97,7 +97,7 @@ class Post(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='image/posts', default='default/post.jpg')
     status = models.CharField(choices=STATUS, max_length=100, default='Draft')
-    views = models.IntegerField(default=1)
+    views = models.IntegerField(default=0)
     likes = models.ManyToManyField(User, blank=True, related_name='liked_posts')
     slug = models.SlugField(unique=True)
     date = models.DateTimeField(auto_now_add=True)
