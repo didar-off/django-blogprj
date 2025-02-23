@@ -99,7 +99,7 @@ class LikePostAPIView(APIView):
             type=openapi.TYPE_OBJECT,
             properties={
                 'user_id': openapi.Schema(type=openapi.TYPE_INTEGER),
-                'post_id': openapi.Schema(type=openapi.TYPE_STRING),
+                'post_id': openapi.Schema(type=openapi.TYPE_INTEGER),
             },
         ),
     )
@@ -124,3 +124,81 @@ class LikePostAPIView(APIView):
             )
 
             return Response({'message': 'Post Liked'}, status=status.HTTP_201_CREATED)
+        
+
+class PostCommentAPIView(APIView):
+
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'post_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                'name': openapi.Schema(type=openapi.TYPE_STRING),
+                'email': openapi.Schema(type=openapi.TYPE_STRING),
+                'comment': openapi.Schema(type=openapi.TYPE_STRING),
+            },
+        ),
+    )
+
+    def post(self, request):
+        post_id = request.data['post_id']
+        name = request.data['name']
+        email = request.data['email']
+        comment = request.data['comment']
+
+        post = api_models.Post.objects.get(id=post_id)
+
+        api_models.Comment.objects.create(
+            post = post,
+            name = name,
+            email = email,
+            comment = comment
+        )
+
+        api_models.Notification.objects.create(
+                user = post.user,
+                post = post,
+                type = 'Comment'
+            )
+        
+        return Response({'message': 'Comment Sent'}, status=status.HTTP_201_CREATED)
+    
+
+class BookmarkAPIView(APIView):
+    
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'user_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                'post_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+            },
+        ),
+    )
+    
+    def post(self, request):
+        user_id = request.data['user_id']
+        post_id = request.data['post_id']
+
+        user = api_models.User.objects.get(id=user_id)
+        post = api_models.Post.objects.get(id=post_id)
+
+        bookmark = api_models.Bookmark.objects.filter(post=post, user=user).first()
+
+        if bookmark:
+            bookmark.delete()
+            return Response({'message': 'Bookmark Deleted'}, status=status.HTTP_200_OK)
+        else:
+            api_models.Bookmark.objects.create(
+                user = user,
+                post = post
+            )
+
+            api_models.Notification.objects.create(
+                    user = post.user,
+                    post = post,
+                    type = 'Bookmark'
+                )
+            
+            return Response({'message': 'Post Bookmarked'}, status=status.HTTP_201_CREATED)
+
